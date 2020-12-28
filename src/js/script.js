@@ -17,7 +17,6 @@ window.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.next').addEventListener('click', function () {
         slider.goTo('next');
     });
-});
 
     $('ul.catalog__tabs').on('click', 'li:not(.catalog__tab_active)', function() {
         $(this)
@@ -37,3 +36,20 @@ window.addEventListener('DOMContentLoaded', function() {
 
     toggleSlide('.catalog-item__link');
     toggleSlide('.catalog-item__back');
+
+    $('[data-modal=consultation]').on('click', function() {
+        $('.overlay, #consultation').fadeIn('slow');
+    });
+    $('.modal__close').on('click', function() {
+        $('.overlay, #consultation, #oreder, #thanks').fadeOut('slow');
+    });
+
+    $('.button_mini').each(function(i) {
+        $(this).on('click', function() {
+            $('#order .modal__descr').text($('.catalog-item__subtitle').eq(i).text());
+            $('.overlay, #order').fadeIn('slow');
+        });
+    });
+});
+
+    
