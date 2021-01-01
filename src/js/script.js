@@ -18,10 +18,36 @@ window.addEventListener('DOMContentLoaded', function() {
         slider.goTo('next');
     });
 
-    $('ul.catalog__tabs').on('click', 'li:not(.catalog__tab_active)', function() {
-        $(this)
-            .addClass('catalog__tab_active').siblings().removeClass('catalog__tab_active')
-            .closest('div.container').find('div.catalog__content').removeClass('catalog__content_active').eq($(this).index()).addClass('catalog__content_active');
+    // $('ul.catalog__tabs').on('click', 'li:not(.catalog__tab_active)', function() {
+    //     $(this)
+    //         .addClass('catalog__tab_active').siblings().removeClass('catalog__tab_active')
+    //         .closest('div.container').find('div.catalog__content').removeClass('catalog__content_active').eq($(this).index()).addClass('catalog__content_active');
+    // });
+
+    const tabContent = document.querySelectorAll('.catalog__content'),
+          tabCatalog = document.querySelectorAll('.catalog__tab'); 
+
+    function allTabsRemove() {
+        tabCatalog.forEach(item => {
+            item.classList.remove('catalog__tab_active');
+        });
+
+        tabContent.forEach(item => {
+            item.classList.remove('catalog__content_active');
+        });
+    }
+
+    function tabActive(i) {
+        i.classList.add('catalog__tab_active');
+        tabContent[i].classList.add('catalog__content_active');
+    }
+
+    
+    tabCatalog.forEach((i) => {
+        i.addEventListener('click', () => {
+            allTabsRemove();
+            tabActive(i);
+        });           
     });
 
     function toggleSlide(item) {
@@ -50,6 +76,60 @@ window.addEventListener('DOMContentLoaded', function() {
             $('.overlay, #order').fadeIn('slow');
         });
     });
-});
 
-    
+    function validateForms(form) {
+        $(form).validate({
+            rules: {
+                name: 'required',
+                phone: 'required',
+                email: {
+                    required: true,
+                    email: true
+                    }
+                },
+            messages: {
+                name: 'Пожалуйста введите своё имя',
+                phone: 'Пожалуйста введите корректный номер телефона',
+                email: {
+                    required: 'Введите адресс электронной почты',
+                    email: 'Неправильно введен адрес почты'
+                }
+            }
+        });
+    }
+
+    validateForms('#consultation-form');
+    validateForms('#consultation form');
+    validateForms('#order form');
+
+    // $('input[name=phone]').mask("+7 (999) 999-99-99")
+
+    $('form').submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: 'mailer/smart.php',
+            data: $(this).serialize()
+        }).done(function() {
+            $(this).find('input').value('');
+            $('#consultation, #order').fadeOut();
+            $('.overlay, #thanks').fadeIn('slow');
+            $('form').trigger('reset');
+            return false;
+        });
+    });
+
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 1600) {
+            $('.page_up').fadeIn();
+        } else {
+            $('.page_up').fadeOut();
+        }
+    });
+
+    $("a[href^='#']").click(function(){
+        const _href = $(this).attr("href");
+        $("html, body").animate({scrollTop: $(_href).offset().top+"px"});
+        return false;
+    });
+});
