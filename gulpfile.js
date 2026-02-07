@@ -7,7 +7,7 @@ const gulp  = require('gulp'),
       cleanCSS = require('gulp-clean-css'),
       htmlmin = require('gulp-htmlmin'),
       webpack = require('webpack-stream'),
-      imagemin = require('gulp-imagemin');
+      imagemin = require('gulp-imagemin')
 // Static server
 gulp.task('server', function() {
     browserSync.init({
@@ -48,27 +48,28 @@ gulp.task('scripts', () => {
         .pipe(gulp.dest("dist/js"));
 });
 
-// gulp.task('fonts', () => {
-//    return gulp.src("src/fonts/**/*")
-//        .pipe(gulp.dest("dist/fonts"));
-//});
-
-// gulp.task('icons', () => {
-//     return gulp.src("src/icons/**/*")
-//         .pipe(gulp.dest("dist/icons"));
-// });
+gulp.task('fonts', () => {
+   return gulp.src("src/fonts/**/*")
+       .pipe(gulp.dest("dist/fonts"));
+});
 
 gulp.task('mailer', () => {
     return gulp.src("src/mailer/**/*")
         .pipe(gulp.dest("dist/mailer"));
 });
 
+gulp.task('icons', () => {
+    return gulp.src("src/icons/**/*", { encoding: false })
+        .pipe(gulp.dest("dist/icons", { encoding: false }));
+});
+
+
 gulp.task('img', async () => {
     const mozjpeg = (await import('imagemin-mozjpeg')).default,
           optipng = (await import('imagemin-optipng')).default,
           svgo = (await import('imagemin-svgo')).default;
 
-    return gulp.src('./src/img/**/*')
+    return gulp.src('./src/img/**/*', { encoding: false })
         .pipe(imagemin([
             mozjpeg({ quality: 75, progressive: true }),
             optipng({ optimizationLevel: 5 }),
@@ -79,7 +80,7 @@ gulp.task('img', async () => {
                 ]
             })
         ]))
-    .pipe(gulp.dest('./dist/img/'));
+    .pipe(gulp.dest('./dist/img/', { encoding: false }));
 });
 
 gulp.task("build-js", () => {
@@ -115,8 +116,5 @@ gulp.task("build-js", () => {
 });
 
 gulp.task('build', gulp.parallel('build-js'));
-gulp.task('default', gulp.parallel('watch', 'server', 'styles', 'scripts', 
-//    'fonts',
-'html', 
-// 'icons',
- 'mailer', 'img', "build"));
+
+gulp.task('default', gulp.parallel('watch', 'img',  'icons', 'styles', 'scripts', 'fonts','html',  'mailer', 'server', 'build'));
